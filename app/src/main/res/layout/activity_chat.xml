@@ -7,7 +7,7 @@
     tools:context=".ChatActivity">
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/chat_editText_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
@@ -15,12 +15,12 @@
         android:hint="Message"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/chat_button_recycler"
+        app:layout_constraintEnd_toStartOf="@+id/chat_button_send"
         app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/chat_button_recycler"
+        android:id="@+id/chat_button_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
@@ -38,7 +38,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/editText"
+        app:layout_constraintBottom_toTopOf="@+id/chat_editText_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
