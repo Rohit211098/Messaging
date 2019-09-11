@@ -70,6 +70,8 @@ public class NewConversationAdapter extends RecyclerView.Adapter<NewConversation
             Intent intent = new Intent( v.getContext(),ChatActivity.class);
             Bundle bundle= new Bundle();
             bundle.putString("otherUser",usersModels.get(getAdapterPosition()).getUserId());
+            bundle.putString("image",usersModels.get(getAdapterPosition()).getImageURL());
+            bundle.putString("name",usersModels.get(getAdapterPosition()).getName());
             intent.putExtras(bundle);
             v.getContext().startActivity(intent);
 

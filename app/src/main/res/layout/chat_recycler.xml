@@ -5,14 +5,14 @@
     android:gravity="end"
     android:id="@+id/container_parent"
     android:layout_margin="10dp">
-    
-    <LinearLayout
-        android:gravity="end"
-        android:orientation="vertical"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
 
-        android:id="@+id/container">
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/date">
 
         <TextView
 
@@ -21,7 +21,46 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="id"
-            android:id="@+id/message"/>
+            android:id="@+id/show_date"/>
+
+
+    </LinearLayout>
+
+    
+    <LinearLayout
+        android:gravity="end"
+        android:orientation="vertical"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/container">
+
+        <LinearLayout
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:id="@+id/inside_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+
+
+                android:paddingBottom="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="iddafewfaewfasfrefafefeewf"
+                android:id="@+id/message"/>
+            <TextView
+                android:layout_gravity="end"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12:11 pm"
+                android:id="@+id/time"/>
+
+
+        </LinearLayout>
+
+
 
 
     </LinearLayout>

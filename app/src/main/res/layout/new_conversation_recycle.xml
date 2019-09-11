@@ -1,24 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     >
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/new_conversation_profile_image"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        app:civ_border_width="0dp"
-        app:civ_border_color="#FF000000"/>
-    <TextView
-        android:id="@+id/new_conversation_name"
-        android:text="jsbfjrngjnrekf"
-        android:textSize="18sp"
-        android:gravity="center_vertical"
-        android:layout_marginStart="30dp"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/new_conversation_profile_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:civ_border_width="0dp"
+            app:civ_border_color="#FF000000"/>
+
+        <TextView
+            android:id="@+id/new_conversation_name"
+            android:text="jsbfjrngjnrekf"
+            android:textSize="18sp"
+            android:gravity="top"
+            android:paddingTop="5dp"
+            android:textColor="#494949"
+            android:layout_marginStart="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="9"/>
+
+
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_marginStart="75dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#A8A7A7"
+        />
+
 
 </LinearLayout>
