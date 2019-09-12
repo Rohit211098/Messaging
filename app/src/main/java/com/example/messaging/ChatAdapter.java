@@ -12,12 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCoustomViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCustomViewHolder> {
 
     List<ChatModel> chatModels;
     Context context;
@@ -33,40 +32,44 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCoustomVie
 
     @NonNull
     @Override
-    public ChatCoustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ChatCustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_recycler,parent,false);
 
-        return new ChatCoustomViewHolder(view);
+        return new ChatCustomViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatCoustomViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ChatCustomViewHolder holder, int position) {
 
         holder.message.setText(chatModels.get(position).getMessage());
 
         Log.e("q","========================="+position);
         p=position;
-//        if (position == 1){
-//            holder.date.setText(chatModels.get(position).getDate());
-//            holder.linearlayoutDate.setVisibility(View.VISIBLE);
-//            Log.e("q","position 0");
-//            flag =false;
-//        }else {
-//
-//
-//
-//
-//        }
+        if (position == 0){
+            holder.date.setText(chatModels.get(position).getDate());
+            holder.linearLayoutDate.setVisibility(View.VISIBLE);
+            holder.date.setVisibility(View.VISIBLE);
+            Log.e("q","position 0");
+            flag =false;
+        }else {
+//            if(position>0){
+                if (!chatModels.get(position-1).getDate().matches(chatModels.get(position).getDate())) {
+                    holder.date.setText(chatModels.get(position).getDate());
+                    holder.linearLayoutDate.setVisibility(View.VISIBLE);
+                    holder.date.setVisibility(View.VISIBLE);
+                    Log.e("q", "position1 " + chatModels.get(position - 1).getDate());
+                    Log.e("q", "position2 " + chatModels.get(position).getDate());
+//                }
+                }else {
+                    holder.linearLayoutDate.setVisibility(View.GONE);
+                }
+
+        }
 
 
-        if(position >0)
-            if (!chatModels.get(position-1).getDate().matches(chatModels.get(position).getDate())){
-                holder.date.setText(chatModels.get(position).getDate());
-                holder.linearlayoutDate.setVisibility(View.VISIBLE);
-                Log.e("q","position1 "+chatModels.get(position-1).getDate());
-                Log.e("q","position2 "+chatModels.get(position).getDate());
-            }
+
+
 
         if (chatModels.get(position).getCurrentUser()){
             holder.linearLayout.setGravity(Gravity.END);
@@ -96,12 +99,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCoustomVie
         return chatModels.size();
     }
 
-    protected class ChatCoustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    protected class ChatCustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView message,date,time;
-        private LinearLayout linearLayout,linearLayoutParent,linearlayoutDate,linearLayoutInside;
+        private LinearLayout linearLayout,linearLayoutParent, linearLayoutDate,linearLayoutInside;
 
-        public ChatCoustomViewHolder(@NonNull View itemView) {
+        public ChatCustomViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
 
@@ -109,7 +112,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCoustomVie
             message = itemView.findViewById(R.id.message);
             linearLayout = itemView.findViewById(R.id.container);
             linearLayoutParent = itemView.findViewById(R.id.container_parent);
-            linearlayoutDate = itemView.findViewById(R.id.date);
+            linearLayoutDate = itemView.findViewById(R.id.date);
             linearLayoutInside = itemView.findViewById(R.id.inside_content);
             time= itemView.findViewById(R.id.time);
 
@@ -119,7 +122,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCoustomVie
         @Override
         public void onClick(View v) {
 
-            Toast.makeText(context,"position "+p,Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"position "+getAdapterPosition(),Toast.LENGTH_SHORT).show();
+
+            if (!chatModels.get(getAdapterPosition()-1).getDate().matches(chatModels.get(getAdapterPosition()).getDate())){
+                Log.e("w","++++++++++++++  "+chatModels.get(getAdapterPosition()-1).getDate());
+                Log.e("w","++++++++++++++  "+chatModels.get(getAdapterPosition()).getDate());
+            }
+
 
         }
     }

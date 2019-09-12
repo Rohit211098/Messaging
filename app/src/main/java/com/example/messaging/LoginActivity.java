@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -23,32 +24,22 @@ public class LoginActivity extends AppCompatActivity {
     EditText email,password;
     Button login,register;
     String mEmail,mPassword;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth ;
     private FirebaseAuth.AuthStateListener stateListener ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkSession();
         setContentView(R.layout.activity_login);
         email = findViewById(R.id.login_editText_email);
         password = findViewById(R.id.login_editText_password);
         mAuth = FirebaseAuth.getInstance();
+
         login = findViewById(R.id.button_login);
         register = findViewById(R.id.login_button_register);
 
-        stateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                final FirebaseUser user = mAuth.getCurrentUser();
-                if (user != null){
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
 
-            }
-        };
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +91,23 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void checkSession(){
+        stateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                final FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null){
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                }
+
+            }
+        };
+
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -109,6 +117,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mAuth.addAuthStateListener(stateListener);
+        mAuth.removeAuthStateListener(stateListener);
     }
 }

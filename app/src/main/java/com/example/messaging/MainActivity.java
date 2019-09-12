@@ -3,12 +3,16 @@ package com.example.messaging;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -21,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,12 +34,12 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button logout;
+
     FloatingActionButton startChat;
     private FirebaseAuth auth;
     FirebaseUser mUserId;
-    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference usersDb = db.child("Users");
+    DatabaseReference db ;
+    DatabaseReference usersDb ;
     DatabaseReference conversationsDb,lastMessageDb;
     List<UsersModel> usersModels = new ArrayList<>();
     List<ChatModel> lastChat = new ArrayList<>();
@@ -43,20 +48,31 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference user;
     ValueEventListener lastMessageListener,userListener;
     ChildEventListener conversationListener;
+    Toolbar toolbar;
+    MaterialSearchView searchView ;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        logout =findViewById(R.id.button_logout);
+
+        db = FirebaseDatabase.getInstance().getReference();
+        usersDb = db.child("Users");
+        setContentView(R.layout.app_bar_main);
+
         recyclerView = findViewById(R.id.main_recycle);
+        toolbar = findViewById(R.id.toolbar_main);
+        searchView = findViewById(R.id.search_view_main);
+
         auth = FirebaseAuth.getInstance();
         mUserId = auth.getCurrentUser();
         startChat = findViewById(R.id.FAB_start_conversation);
 
         conversationsDb = db.child("Conversation").child(mUserId.getUid());
-
+        setSupportActionBar(toolbar);
 
         getUsers();
 
@@ -71,12 +87,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            logout();
-            }
-        });
 
 
 
@@ -120,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
                                 lastChat.add(chatModel);
                                 adapter.notifyDataSetChanged();
                             }
+
+                            Log.e("tag","+++++++++++++++++++++++++++++++++."+lastChat.size());
 
                         }
 
@@ -186,6 +198,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+
+
     }
 
 
@@ -233,4 +247,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.logout){
+            logout();
+        }
+        return true;
+    }
 }

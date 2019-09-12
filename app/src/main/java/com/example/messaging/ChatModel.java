@@ -2,8 +2,6 @@ package com.example.messaging;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -83,11 +81,4 @@ public class ChatModel {
 
         return hour+":"+minutes+" "+am;
     }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        return (this.timeStamp ==((ChatModel) obj).getTimeStamp());
-    }
-
-
 }
