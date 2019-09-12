@@ -172,12 +172,16 @@ public class ChatActivity extends AppCompatActivity {
 
         conversationRefCurrent.push().updateChildren(data);
         conversationRefOther.push().updateChildren(data);
+        conversationRefCurrent.child("LastMessage").updateChildren(data);
+        conversationRefOther.child("LastMessage").updateChildren(data);
 
 
     }
 
     private void  getChat(){
         DatabaseReference conversationRefCurrent = db.child("Conversation").child(mAuth.getUid()).child(otherUser);
+
+
 
         conversationRefCurrent.addChildEventListener(new ChildEventListener() {
             @Override
@@ -190,9 +194,12 @@ public class ChatActivity extends AppCompatActivity {
                     isCurrentUser = true;
                 }
 
-                chatModels.add(new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),isCurrentUser));
-                chatAdapter.notifyDataSetChanged();
-                recyclerView.scrollToPosition(chatModels.size()- 1);
+                if(!dataSnapshot.getKey().matches("LastMessage")){
+                    chatModels.add(new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),isCurrentUser));
+                    chatAdapter.notifyDataSetChanged();
+                    recyclerView.scrollToPosition(chatModels.size()- 1);
+                }
+
 
                 Log.e("tsg",""+dataSnapshot.getValue()+"++++++++++++"+s);
 

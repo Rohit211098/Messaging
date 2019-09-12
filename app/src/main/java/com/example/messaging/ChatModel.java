@@ -2,13 +2,16 @@ package com.example.messaging;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class ChatModel {
-    String sender,reciver,message;
+    String sender,reciver,message,displayUserId;
+
     long timeStamp;
     Boolean isCurrentUser;
     Date date ;
@@ -30,8 +33,13 @@ public class ChatModel {
         calendar.setTime(date);
     }
 
+    public void setDisplayUserId(String displayUserId) {
+        this.displayUserId = displayUserId;
+    }
 
-
+    public String getDisplayUserId() {
+        return displayUserId;
+    }
 
     public String getSender() {
         return sender;
@@ -75,4 +83,11 @@ public class ChatModel {
 
         return hour+":"+minutes+" "+am;
     }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return (this.timeStamp ==((ChatModel) obj).getTimeStamp());
+    }
+
+
 }

@@ -35,10 +35,14 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser mUserId;
     DatabaseReference db = FirebaseDatabase.getInstance().getReference();
     DatabaseReference usersDb = db.child("Users");
-    DatabaseReference conversationsDb;
+    DatabaseReference conversationsDb,lastMessageDb;
     List<UsersModel> usersModels = new ArrayList<>();
+    List<ChatModel> lastChat = new ArrayList<>();
     RecyclerView recyclerView;
-    NewConversationAdapter adapter;
+    MainAdapter adapter;
+    DatabaseReference user;
+    ValueEventListener lastMessageListener,userListener;
+    ChildEventListener conversationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +57,10 @@ public class MainActivity extends AppCompatActivity {
 
         conversationsDb = db.child("Conversation").child(mUserId.getUid());
 
+
         getUsers();
 
         setupRecycler();
-
-
-
 
         startChat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,19 +85,61 @@ public class MainActivity extends AppCompatActivity {
 
     private void getUsers(){
 
-        conversationsDb.addChildEventListener(new ChildEventListener() {
+//        conversationsDb.addChildEventListener();
+
+
+        conversationListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.getValue() != null){
-                    Log.e("tag","+++++++++++yess"+dataSnapshot.getChildrenCount());
-                    final String key = dataSnapshot.getKey();
-                    DatabaseReference user = usersDb.child(key);
 
-                    user.addListenerForSingleValueEvent(new ValueEventListener() {
+                    final String key = dataSnapshot.getKey();
+                    user = usersDb.child(key);
+                    lastMessageDb = conversationsDb.child(key).child("LastMessage");
+                    lastMessageListener = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Map data = (HashMap) dataSnapshot.getValue();
+
+                            if (key.matches(data.get("Sender").toString())&&lastChat.size() == dataSnapshot.getChildrenCount()){
+                                ChatModel chatModel = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
+                                chatModel.setDisplayUserId(key);
+                                for (ChatModel i : lastChat){
+                                    if (i.getDisplayUserId().matches(data.get("Sender").toString())){
+                                    int index = lastChat.indexOf(i);
+                                    lastChat.set(index,chatModel);
+                                    break;
+                                }
+                            }
+
+                                adapter.notifyDataSetChanged();
+
+                            }else {
+                                ChatModel chatModel = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
+                                chatModel.setDisplayUserId(key);
+                                lastChat.add(chatModel);
+                                adapter.notifyDataSetChanged();
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    };
+
+
+                    lastMessageDb.addValueEventListener(lastMessageListener);
+
+
+
+                    userListener = new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                             Map data = (HashMap) dataSnapshot.getValue();
+
 
                             usersModels.add(new UsersModel(data.get("Name").toString(),data.get("ProfileImage").toString(),key));
 
@@ -106,7 +150,16 @@ public class MainActivity extends AppCompatActivity {
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
                         }
-                    });
+                    };
+
+
+
+                    user.addListenerForSingleValueEvent(userListener);
+
+
+
+
+
                 }else {
                     Log.e("tag","+++++++++++nonono");
                 }
@@ -131,8 +184,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
-
+        };
 
     }
 
@@ -141,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setupRecycler(){
-        adapter = new NewConversationAdapter(usersModels,getApplicationContext());
+        adapter = new MainAdapter(usersModels,getApplicationContext(),lastChat);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -155,5 +207,30 @@ public class MainActivity extends AppCompatActivity {
         finish();
 
 
+
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (lastMessageListener != null){
+            lastMessageDb.removeEventListener(lastMessageListener);
+        }
+
+        conversationsDb.removeEventListener(conversationListener);
+
+        usersModels.clear();
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        lastChat.clear();
+        conversationsDb.addChildEventListener(conversationListener);
+
+    }
+
 }
