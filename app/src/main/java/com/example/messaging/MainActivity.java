@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     ChatModel chatModel;
     MaterialSearchView searchView ;
+    List<UsersModel> temp = new ArrayList<>();
 
 
 
@@ -90,6 +91,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //Do some magic
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+
+                adapter.changeList(filter(newText));
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+                adapter.changeList(userList);
+            }
+        });
 
 
 
@@ -97,6 +126,21 @@ public class MainActivity extends AppCompatActivity {
     }
     ChatModel chatModelM;
     UsersModel usersModelM;
+
+    private List<UsersModel> filter(String filter){
+        List<UsersModel> temp = new ArrayList<>();
+
+        for (UsersModel i : userList){
+            if (i.getName().toLowerCase().contains(filter.toLowerCase())){
+                temp.add(i);
+            }
+        }
+
+        return temp;
+
+    }
+
+
 
 
     private void getUsers(){

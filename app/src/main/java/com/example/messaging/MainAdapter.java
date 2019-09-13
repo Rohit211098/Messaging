@@ -65,8 +65,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.NewConversatio
     }
 
 
-    private void bindList(){
-
+    public void changeList(List<UsersModel> list){
+        this.usersModels = list;
+        notifyDataSetChanged();
     }
 
 
