@@ -74,8 +74,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCustomView
 
                     holder.linearLayoutDate.setVisibility(View.VISIBLE);
                     holder.date.setVisibility(View.VISIBLE);
-                    Log.e("q", "position1 " + chatModels.get(position - 1).getDate());
-                    Log.e("q", "position2 " + chatModels.get(position).getDate());
+
 
                 }else {
                     holder.linearLayoutDate.setVisibility(View.GONE);
@@ -139,11 +138,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCustomView
         public void onClick(View v) {
 
             Toast.makeText(context,"position "+getAdapterPosition(),Toast.LENGTH_SHORT).show();
-
-            if (!chatModels.get(getAdapterPosition()-1).getDate().matches(chatModels.get(getAdapterPosition()).getDate())){
-                Log.e("w","++++++++++++++  "+chatModels.get(getAdapterPosition()-1).getDate());
-                Log.e("w","++++++++++++++  "+chatModels.get(getAdapterPosition()).getDate());
-            }
 
 
         }

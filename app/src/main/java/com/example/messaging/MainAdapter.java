@@ -21,15 +21,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.NewConversationViewHolder> {
 
     List<UsersModel> usersModels;
-    List<ChatModel> chatModels;
+
     Context context;
 
 
 
-    public MainAdapter(List<UsersModel> usersModels, Context context,List<ChatModel> chatModels) {
+    public MainAdapter(List<UsersModel> usersModels, Context context) {
         this.usersModels = usersModels;
         this.context = context;
-        this.chatModels =chatModels;
+
     }
 
     @NonNull
@@ -48,21 +48,30 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.NewConversatio
             Glide.with(context).load(usersModels.get(position).getImageURL()).into(holder.profileImage);
         }
 
-        if (chatModels.size()!=0 && chatModels.size() > position){
-            holder.lastMessage.setText(chatModels.get(position).message);
-            if ( chatModels.get(position).diffInDate() == 1){
+//        if (chatModels.size()!=0 && chatModels.size() > position){
+            holder.lastMessage.setText(usersModels.get(position).getLastChat().getMessage());
+            if ( usersModels.get(position).getLastChat().diffInDate() == 1){
                 holder.time.setText("Yesterday");
-            }else if (chatModels.get(position).diffInDate() == 0 ){
-                holder.time.setText(chatModels.get(position).getTime());
+            }else if (usersModels.get(position).getLastChat().diffInDate() == 0 ){
+                holder.time.setText(usersModels.get(position).getLastChat().getTime());
 
             }else {
-                holder.time.setText(chatModels.get(position).getDate());
+                holder.time.setText(usersModels.get(position).getLastChat().getDate());
             }
 
-        }
+//        }
 
 
     }
+
+
+    private void bindList(){
+
+    }
+
+
+
+
 
     @Override
     public int getItemCount() {

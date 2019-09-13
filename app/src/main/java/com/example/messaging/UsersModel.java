@@ -1,9 +1,10 @@
 package com.example.messaging;
 
-public class UsersModel {
+public class UsersModel implements Comparable <UsersModel>{
     String name;
     String imageURL;
     ChatModel lastChat;
+
 
     public void setLastChat(ChatModel lastChat) {
         this.lastChat = lastChat;
@@ -33,4 +34,10 @@ public class UsersModel {
         return imageURL;
     }
 
+
+
+    @Override
+    public int compareTo(UsersModel o) {
+        return String.valueOf(this.lastChat.getTimeStamp()).compareTo(String.valueOf(o.lastChat.getTimeStamp()));
+    }
 }

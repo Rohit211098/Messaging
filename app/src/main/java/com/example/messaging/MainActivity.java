@@ -28,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference conversationsDb,lastMessageDb;
     List<UsersModel> usersModels = new ArrayList<>();
     List<ChatModel> lastChat = new ArrayList<>();
+    List<UsersModel> userList = new ArrayList<>();
     RecyclerView recyclerView;
     MainAdapter adapter;
     DatabaseReference user;
@@ -92,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    ChatModel chatModelM;
+    UsersModel usersModelM;
 
 
     private void getUsers(){
@@ -112,24 +117,31 @@ public class MainActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Map data = (HashMap) dataSnapshot.getValue();
 
-                            if (key.matches(data.get("Sender").toString())&&lastChat.size() == dataSnapshot.getChildrenCount()){
-                                ChatModel chatModel = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
-                                chatModel.setDisplayUserId(key);
-                                for (ChatModel i : lastChat){
-                                    if (i.getDisplayUserId().matches(data.get("Sender").toString())){
-                                    int index = lastChat.indexOf(i);
-                                    lastChat.set(index,chatModel);
+                            if (key.matches(data.get("Sender").toString())&&userList.size() == dataSnapshot.getChildrenCount()){
+                                 chatModelM = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
+                                chatModelM.setDisplayUserId(key);
+                                Log.e("p","innnnnk");
+
+                                for (UsersModel i : userList){
+                                    if (i.getLastChat().getDisplayUserId().matches(data.get("Sender").toString())){
+                                    i.setLastChat(chatModelM);
+                                    Collections.sort(userList,Collections.<UsersModel>reverseOrder());
+                                    adapter.notifyDataSetChanged();
                                     break;
                                 }
+
+
                             }
 
-                                adapter.notifyDataSetChanged();
+
 
                             }else {
-                                ChatModel chatModel = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
-                                chatModel.setDisplayUserId(key);
-                                lastChat.add(chatModel);
-                                adapter.notifyDataSetChanged();
+                                chatModelM = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
+                                chatModelM.setDisplayUserId(key);
+//                                lastChat.add(chatModel);
+                                attachLastChat(1);
+
+
                             }
 
                             Log.e("tag","+++++++++++++++++++++++++++++++++."+lastChat.size());
@@ -153,10 +165,11 @@ public class MainActivity extends AppCompatActivity {
 
                             Map data = (HashMap) dataSnapshot.getValue();
 
+                            usersModelM = new UsersModel(data.get("Name").toString(),data.get("ProfileImage").toString(),key);
+//                            usersModels.add(usersModelM);
+                            attachLastChat(2);
 
-                            usersModels.add(new UsersModel(data.get("Name").toString(),data.get("ProfileImage").toString(),key));
-
-                            adapter.notifyDataSetChanged();
+//                            adapter.notifyDataSetChanged();
                         }
 
                         @Override
@@ -203,12 +216,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private Boolean chatB= false,userB=false;
+
+    private void attachLastChat(int i){
+        if (i==1)
+            chatB = true;
+        else if (i == 2)
+            userB = true;
+
+        if ( (chatB && userB)){
+            usersModelM.setLastChat(chatModelM);
+            userList.add(usersModelM);
+            chatB = false;
+            userB= false;
+            Collections.sort(userList,Collections.<UsersModel>reverseOrder());
+            adapter.notifyDataSetChanged();
+        }
+
+
+    }
+
+    private void updateLastChat(int index){
+
+    }
 
 
 
 
     private void setupRecycler(){
-        adapter = new MainAdapter(usersModels,getApplicationContext(),lastChat);
+        adapter = new MainAdapter(userList,getApplicationContext());
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -243,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        lastChat.clear();
+        userList.clear();
         conversationsDb.addChildEventListener(conversationListener);
 
     }
