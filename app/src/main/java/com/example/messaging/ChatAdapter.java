@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Date;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCustomViewHolder> {
@@ -47,20 +48,35 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCustomView
         Log.e("q","========================="+position);
         p=position;
         if (position == 0){
-            holder.date.setText(chatModels.get(position).getDate());
+
+            if ( chatModels.get(position).diffInDate() == 1){
+                holder.date.setText("Yesterday");
+            }else if (chatModels.get(position).diffInDate() == 0 ){
+                holder.date.setText("Today");
+            }else {
+                holder.date.setText(chatModels.get(position).getDate());
+            }
+
             holder.linearLayoutDate.setVisibility(View.VISIBLE);
             holder.date.setVisibility(View.VISIBLE);
             Log.e("q","position 0");
             flag =false;
         }else {
-//            if(position>0){
+
                 if (!chatModels.get(position-1).getDate().matches(chatModels.get(position).getDate())) {
-                    holder.date.setText(chatModels.get(position).getDate());
+                    if ( chatModels.get(position).diffInDate() == 1){
+                        holder.date.setText("Yesterday");
+                    }else if (chatModels.get(position).diffInDate() == 0 ){
+                        holder.date.setText("Today");
+                    }else {
+                        holder.date.setText(chatModels.get(position).getDate());
+                    }
+
                     holder.linearLayoutDate.setVisibility(View.VISIBLE);
                     holder.date.setVisibility(View.VISIBLE);
                     Log.e("q", "position1 " + chatModels.get(position - 1).getDate());
                     Log.e("q", "position2 " + chatModels.get(position).getDate());
-//                }
+
                 }else {
                     holder.linearLayoutDate.setVisibility(View.GONE);
                 }

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -49,7 +50,15 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.NewConversatio
 
         if (chatModels.size()!=0 && chatModels.size() > position){
             holder.lastMessage.setText(chatModels.get(position).message);
-            holder.time.setText(chatModels.get(position).getTime());
+            if ( chatModels.get(position).diffInDate() == 1){
+                holder.time.setText("Yesterday");
+            }else if (chatModels.get(position).diffInDate() == 0 ){
+                holder.time.setText(chatModels.get(position).getTime());
+
+            }else {
+                holder.time.setText(chatModels.get(position).getDate());
+            }
+
         }
 
 

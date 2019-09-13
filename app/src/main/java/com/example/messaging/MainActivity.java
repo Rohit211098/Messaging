@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     ValueEventListener lastMessageListener,userListener;
     ChildEventListener conversationListener;
     Toolbar toolbar;
+    ChatModel chatModel;
     MaterialSearchView searchView ;
 
 

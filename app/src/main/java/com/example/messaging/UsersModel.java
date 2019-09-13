@@ -3,6 +3,15 @@ package com.example.messaging;
 public class UsersModel {
     String name;
     String imageURL;
+    ChatModel lastChat;
+
+    public void setLastChat(ChatModel lastChat) {
+        this.lastChat = lastChat;
+    }
+
+    public ChatModel getLastChat() {
+        return lastChat;
+    }
 
     public String getUserId() {
         return userId;
