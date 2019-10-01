@@ -19,11 +19,11 @@ import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCustomViewHolder> {
 
-    List<ChatModel> chatModels;
-    Context context;
-    View view;
-    Boolean flag = true;
-    int p ;
+    private List<ChatModel> chatModels;
+    private Context context;
+    private View view;
+    private Boolean flag = true;
+
 
 
     public ChatAdapter(List<ChatModel> chatModels, Context context) {
@@ -46,7 +46,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatCustomView
         holder.message.setText(chatModels.get(position).getMessage());
 
         Log.e("q","========================="+position);
-        p=position;
+
         if (position == 0){
 
             if ( chatModels.get(position).diffInDate() == 1){

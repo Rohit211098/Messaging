@@ -14,14 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
-import java.util.zip.Inflater;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NewConversationAdapter extends RecyclerView.Adapter<NewConversationAdapter.NewConversationViewHolder> {
 
-    List<UsersModel> usersModels;
-    Context context;
+    private List<UsersModel> usersModels;
+    private Context context;
 
 
 
@@ -42,7 +42,12 @@ public class NewConversationAdapter extends RecyclerView.Adapter<NewConversation
     @Override
     public void onBindViewHolder(@NonNull NewConversationViewHolder holder, int position) {
         holder.name.setText(usersModels.get(position).getName());
-        Glide.with(context).load(usersModels.get(position).getImageURL()).into(holder.profileImage);
+        if (usersModels.get(position).getImageURL() != null){
+            Glide.with(context).load(usersModels.get(position).getImageURL()).into(holder.profileImage);
+        }else {
+            Glide.with(context).load(R.drawable.icon_user).into(holder.profileImage);
+        }
+
     }
 
     @Override

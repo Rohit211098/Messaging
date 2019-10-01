@@ -23,11 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +41,6 @@ public class ChatActivity extends AppCompatActivity {
     List<ChatModel> chatModels = new ArrayList<>();
     RecyclerView recyclerView;
     ChatAdapter chatAdapter;
-    DatabaseReference userDB = db.child("Users");
     Toolbar toolbar ;
     ImageView profile,back;
     TextView name;
@@ -78,10 +73,14 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        Glide.with(this).load(image).into(profile);
+        if (image != null){
+            Glide.with(this).load(image).into(profile);
+        }else {
+            Glide.with(this).load(R.drawable.icon_user).into(profile);
+        }
+
         name.setText(otherName);
 
 
@@ -92,50 +91,41 @@ public class ChatActivity extends AppCompatActivity {
                 sendMessage(message);
             }
         });
-        Log.e("tsg","********************************");
+
 
         mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("Conversation").child(currentUser);
 
-        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("tsg","********************************"+dataSnapshot.getValue());
-                if(dataSnapshot.getValue() != null){
-//                    for (DataSnapshot item :dataSnapshot.getChildren()){
-//                        if (item.getKey().contentEquals(otherUser) ){
-//                            isPreviousConversation = false;
-//                            Log.e("tsg","false"+item.getKey());
+//        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //
-//                        }else {
-//                            isPreviousConversation = true;
-//                            Log.e("tsg","true");
-//                        }
+//                if(dataSnapshot.getValue() != null){
+//
+//                    if (dataSnapshot.getChildrenCount() > 0 ){
+//                        isPreviousConversation = true;
+//                    }else {
+//                        isPreviousConversation = false;
 //                    }
-                    if (dataSnapshot.getChildrenCount() > 0 ){
-                        isPreviousConversation = true;
-                    }else {
-                        isPreviousConversation = false;
-                    }
-                }else {
-                    Log.e("tsg","false");
-                }
-            }
-
-
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//                }else {
+//                    Log.e("tsg","false");
+//                }
+//            }
+//
+//
+//
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         getChat();
 
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-//        linearLayoutManager.setStackFromEnd(true);
+
 
         recyclerView.setLayoutManager(linearLayoutManager);
         chatAdapter = new ChatAdapter(chatModels,getApplicationContext());

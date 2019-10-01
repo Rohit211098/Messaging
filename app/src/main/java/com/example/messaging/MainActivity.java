@@ -2,8 +2,11 @@ package com.example.messaging;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,8 +18,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -51,11 +58,9 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference user;
     ValueEventListener lastMessageListener,userListener;
     ChildEventListener conversationListener;
-    Toolbar toolbar;
-    ChatModel chatModel;
-    MaterialSearchView searchView ;
+    FloatingSearchView searchView ;
     List<UsersModel> temp = new ArrayList<>();
-
+    private String mNewString;
 
 
 
@@ -66,18 +71,73 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseDatabase.getInstance().getReference();
         usersDb = db.child("Users");
-        setContentView(R.layout.app_bar_main);
-
+        setContentView(R.layout.activity_main);
+        searchView = findViewById(R.id.floating_search_view);
         recyclerView = findViewById(R.id.main_recycle);
-        toolbar = findViewById(R.id.toolbar_main);
-        searchView = findViewById(R.id.search_view_main);
+
 
         auth = FirebaseAuth.getInstance();
         mUserId = auth.getCurrentUser();
         startChat = findViewById(R.id.FAB_start_conversation);
 
         conversationsDb = db.child("Conversation").child(mUserId.getUid());
-        setSupportActionBar(toolbar);
+
+
+
+
+        searchView.bringToFront();
+
+
+        searchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+
+
+                //pass them on to the search view
+                mNewString = newQuery;
+                searchView.showProgress();
+                if (newQuery.contentEquals("")){
+                    adapter.changeList(userList);
+                    searchView.hideProgress();
+                }else {
+
+                    temp = filter(newQuery);
+                    adapter.changeList(temp);
+                    searchView.hideProgress();
+                }
+
+//                searchView.swapSuggestions(filter(newQuery));
+            }
+        });
+
+
+
+        searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+            @Override
+            public void onFocus() {
+                adapter.changeList(temp);
+            }
+
+            @Override
+            public void onFocusCleared() {
+                if (mNewString == null || mNewString.contentEquals("")){
+                    adapter.changeList(userList);
+                }
+            }
+        });
+
+        searchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+
+                if (item.getItemId() == R.id.logout){
+                    logout();
+                }
+
+            }
+        });
+
+
 
         getUsers();
 
@@ -91,34 +151,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                //Do some magic
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //Do some magic
-
-                adapter.changeList(filter(newText));
-                return false;
-            }
-        });
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-                adapter.changeList(userList);
-            }
-        });
 
 
 
@@ -159,36 +192,40 @@ public class MainActivity extends AppCompatActivity {
                     lastMessageListener = new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Map data = (HashMap) dataSnapshot.getValue();
+                            if (dataSnapshot.getValue() != null){
 
-                            if (key.matches(data.get("Sender").toString())&&userList.size() == dataSnapshot.getChildrenCount()){
-                                 chatModelM = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
-                                chatModelM.setDisplayUserId(key);
-                                Log.e("p","innnnnk");
+                                Map data = (HashMap) dataSnapshot.getValue();
 
-                                for (UsersModel i : userList){
-                                    if (i.getLastChat().getDisplayUserId().matches(data.get("Sender").toString())){
-                                    i.setLastChat(chatModelM);
-                                    Collections.sort(userList,Collections.<UsersModel>reverseOrder());
-                                    adapter.notifyDataSetChanged();
-                                    break;
+                                if (key.matches(data.get("Sender").toString())&&userList.size() == dataSnapshot.getChildrenCount()){
+                                    chatModelM = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
+                                    chatModelM.setDisplayUserId(key);
+
+
+                                    for (UsersModel i : userList){
+                                        if (i.getLastChat().getDisplayUserId().matches(data.get("Sender").toString())){
+                                            i.setLastChat(chatModelM);
+                                            Collections.sort(userList,Collections.<UsersModel>reverseOrder());
+                                            adapter.notifyDataSetChanged();
+                                            break;
+                                        }
+
+
+                                    }
+
+
+
+                                }else {
+                                    chatModelM = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
+                                    chatModelM.setDisplayUserId(key);
+//                                lastChat.add(chatModel);
+                                    attachLastChat(1);
+
+
                                 }
 
-
                             }
 
 
-
-                            }else {
-                                chatModelM = new ChatModel(data.get("Sender").toString(),data.get("Receiver").toString(),data.get("Message").toString(),Long.valueOf(data.get("TimeStamp").toString()),true);
-                                chatModelM.setDisplayUserId(key);
-//                                lastChat.add(chatModel);
-                                attachLastChat(1);
-
-
-                            }
-
-                            Log.e("tag","+++++++++++++++++++++++++++++++++."+lastChat.size());
 
                         }
 
@@ -207,13 +244,24 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            Map data = (HashMap) dataSnapshot.getValue();
+                            if (dataSnapshot.getValue() != null){
+                                Map data = (HashMap) dataSnapshot.getValue();
 
-                            usersModelM = new UsersModel(data.get("Name").toString(),data.get("ProfileImage").toString(),key);
+                                if (data.containsKey("ProfileImage")){
+                                    usersModelM = new UsersModel(data.get("Name").toString(),data.get("ProfileImage").toString(),key);
+                                }else {
+                                    usersModelM = new UsersModel(data.get("Name").toString(),null,key);
+
+                                }
+
+
 //                            usersModels.add(usersModelM);
-                            attachLastChat(2);
+                                attachLastChat(2);
 
 //                            adapter.notifyDataSetChanged();
+                            }
+
+
                         }
 
                         @Override
@@ -231,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 }else {
-                    Log.e("tag","+++++++++++nonono");
+                    Log.e("tag","no data in database snapshot");
                 }
             }
 
@@ -280,9 +328,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void updateLastChat(int index){
-
-    }
 
 
 
@@ -328,20 +373,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.logout){
-            logout();
-        }
-        return true;
-    }
 }

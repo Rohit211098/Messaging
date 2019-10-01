@@ -1,7 +1,6 @@
 package com.example.messaging;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,8 +16,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +27,7 @@ public class NewConversation extends AppCompatActivity {
     List<UsersModel> usersModel  = new ArrayList<>();
     RecyclerView recyclerView;
     NewConversationAdapter newConversationAdapter;
+    private ValueEventListener valueEventListener ;
 
 
     @Override
@@ -42,36 +39,62 @@ public class NewConversation extends AppCompatActivity {
 
         getSupportActionBar().setTitle("New Chat");
 
-
-
-        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot user : dataSnapshot.getChildren()){
+                if (dataSnapshot.getValue() != null){
 
-                    Map userMap = (HashMap) user.getValue();
-                    if (!user.getKey().contentEquals(mAuth.getUid())){
+                    for (DataSnapshot user : dataSnapshot.getChildren()){
+
+                        Map userMap = (HashMap) user.getValue();
+                        if (!user.getKey().contentEquals(mAuth.getUid())){
 
 
 
-                        Log.e("tag",""+user.getKey()+"++++++++"+mAuth.getUid());
-                        usersModel.add(new UsersModel(userMap.get("Name").toString(),userMap.get("ProfileImage").toString(),user.getKey()));
+                            Log.e("tag",""+user.getKey()+"++++++++"+mAuth.getUid());
+                            if (userMap.containsKey("ProfileImage")){
+                                usersModel.add(new UsersModel(userMap.get("Name").toString(),userMap.get("ProfileImage").toString(),user.getKey()));
+                            }else {
+                                usersModel.add(new UsersModel(userMap.get("Name").toString(),null,user.getKey()));
+
+                            }
+
+                        }
+
                     }
+                    newConversationAdapter.notifyDataSetChanged();
 
                 }
-                newConversationAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
+
+
+
+
+
+
 
         newConversationAdapter = new NewConversationAdapter(usersModel,getApplicationContext());
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(newConversationAdapter);
 
+    }
+
+    @Override
+    protected void onStart() {
+        mDatabaseRef.addValueEventListener(valueEventListener);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mDatabaseRef.removeEventListener(valueEventListener);
+        super.onStop();
     }
 }

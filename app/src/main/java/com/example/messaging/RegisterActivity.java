@@ -7,13 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -37,8 +32,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -154,16 +147,13 @@ public class RegisterActivity extends AppCompatActivity {
 
             onUpload();
 
-
-//            Glide.with(this).load(uri).apply(RequestOptions.circleCropTransform()).into(profilePicture);
-//            onUplode();
         }
     }
 
     private  void  onUpload(){
 
         if(uriImage != null){
-            final StorageReference mstorageReference = mStorageRef.child(System.currentTimeMillis()+"."+getExtinson(uriImage));
+            final StorageReference mstorageReference = mStorageRef.child(System.currentTimeMillis()+"."+ getExtension(uriImage));
             storageTask = mstorageReference.putFile(uriImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
@@ -198,7 +188,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private String getExtinson(Uri uri){
+    private String getExtension(Uri uri){
         ContentResolver contentResolver = getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));

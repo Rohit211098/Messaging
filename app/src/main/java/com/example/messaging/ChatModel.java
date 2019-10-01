@@ -1,20 +1,15 @@
 package com.example.messaging;
 
-import android.view.View;
 
-import java.sql.Time;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class ChatModel {
-    String sender,reciver,message,displayUserId;
-
-    long timeStamp;
-    Boolean isCurrentUser;
-    Date date ;
-
-    Calendar calendar = Calendar.getInstance();
+    private String sender, receiver,message,displayUserId;
+    private  long timeStamp;
+    private  Boolean isCurrentUser;
+    private Date date ;
+    private Calendar calendar = Calendar.getInstance();
 
 
 
@@ -24,9 +19,9 @@ public class ChatModel {
 
 
 
-    public ChatModel(String sender, String reciver, String message, long timeStamp, Boolean isCurrentUser) {
+    public ChatModel(String sender, String receiver, String message, long timeStamp, Boolean isCurrentUser) {
         this.sender = sender;
-        this.reciver = reciver;
+        this.receiver = receiver;
         this.message = message;
         this.timeStamp = timeStamp;
         this.isCurrentUser = isCurrentUser;
@@ -46,8 +41,8 @@ public class ChatModel {
         return sender;
     }
 
-    public String getReciver() {
-        return reciver;
+    public String getReceiver() {
+        return receiver;
     }
 
     public String getMessage() {
@@ -115,11 +110,7 @@ public class ChatModel {
     }
 
 
-//    public int isYesterday(){
-//        Date dt2 = new Date(System.currentTimeMillis());
-//        dt2.
-//
-//    }
+
 
     private String getMonthInString(int month){
         String monthString;

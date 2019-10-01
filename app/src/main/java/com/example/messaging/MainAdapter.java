@@ -20,9 +20,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.NewConversationViewHolder> {
 
-    List<UsersModel> usersModels;
+    private List<UsersModel> usersModels;
 
-    Context context;
+    private Context context;
 
 
 
@@ -45,7 +45,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.NewConversatio
     public void onBindViewHolder(@NonNull NewConversationViewHolder holder, int position) {
         if (usersModels.size() != 0){
             holder.name.setText(usersModels.get(position).getName());
-            Glide.with(context).load(usersModels.get(position).getImageURL()).into(holder.profileImage);
+
+            if (usersModels.get(position).getImageURL() != null){
+                Glide.with(context).load(usersModels.get(position).getImageURL()).into(holder.profileImage);
+            }else {
+                Glide.with(context).load(R.drawable.icon_user).into(holder.profileImage);
+            }
+
         }
 
 //        if (chatModels.size()!=0 && chatModels.size() > position){
